@@ -14,6 +14,36 @@ const config = {
     measurementId: "G-TVDDKFV07K"
 };
 
+export const createUserProfileDocument = async (userAuth, additionlData) => {
+
+    if (!userAuth) return;
+
+    const userRef = firestore.doc(`users/${userAuth.uid}`)
+    const snapShot = await userRef.get()
+    // Checking to see if userAUth Id exist in Databse
+
+    if (!snapShot.exists) {
+        // usering userReference to create the date in DATABSE
+
+        // Datas needed
+        // Destructing Data from userAuth to select only diplay name and email
+        const { displayName, email } = userAuth;
+        const createdDate = new Date();
+
+        try {
+            await userRef.set({
+                // Inserting new Data and spreading the additonal Data 
+                displayName, email, createdDate, ...additionlData
+            })
+        } catch (error) {
+            console.log("Error Createing User", error.message)
+        }
+
+    }
+    return userRef;
+
+}
+
 firebase.initializeApp(config)
 export const auth = firebase.auth()
 export const firestore = firebase.firestore()
